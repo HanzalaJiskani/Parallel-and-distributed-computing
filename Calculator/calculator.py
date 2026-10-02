@@ -1,4 +1,9 @@
-"Simple python calculator"
+"""Simple command-line calculator covering every basic arithmetic operation.
+
+After each calculation it also prints how long the operation took to run.
+"""
+
+import time
 
 
 def add(a, b):
@@ -46,6 +51,15 @@ OPERATIONS = {
 }
 
 
+def format_time(ns):
+    """Format a duration given in nanoseconds into a readable string."""
+    if ns < 1_000:
+        return f"{ns} ns"
+    if ns < 1_000_000:
+        return f"{ns / 1_000:.2f} µs"
+    return f"{ns / 1_000_000:.2f} ms"
+
+
 def get_number(prompt):
     while True:
         try:
@@ -74,10 +88,16 @@ def main():
         b = get_number("Second number: ")
         name, func = OPERATIONS[choice]
 
+        start = time.perf_counter_ns()
         try:
-            print(f"Result ({name}): {func(a, b)}")
+            result = func(a, b)
+            elapsed = time.perf_counter_ns() - start
+            print(f"Result ({name}): {result}")
+            print(f"Runtime: {format_time(elapsed)}")
         except ZeroDivisionError as err:
+            elapsed = time.perf_counter_ns() - start
             print(f"Error: {err}")
+            print(f"Runtime: {format_time(elapsed)}")
 
 
 if __name__ == "__main__":
